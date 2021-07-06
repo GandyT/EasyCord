@@ -121,3 +121,5 @@ dist
 .test
 test
 test.js
+test/
+.test/

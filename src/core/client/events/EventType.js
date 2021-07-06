@@ -46,18 +46,11 @@ module.exports = {
     "MESSAGE_REACTION_REMOVE_EMOJI": "",
     "TYPING_START": "",
     getName(event) {
-        if (this[event]) return this[event];
+        if (this[event]) return this[event].toLowerCase();
 
         return event
             .toLowerCase()
             .split("_")
-            .map((e, i) => {
-                if (i > 0) {
-                    return e[0].toUpperCase() + e.slice(1);
-                } else {
-                    return e;
-                }
-            })
             .join("");
     }
 }

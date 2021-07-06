@@ -1,5 +1,22 @@
-const payload = (incoming, client) => {
+function payload(incoming) {
+    var client = this;
     var data = JSON.parse(incoming);
+
+    if (data.t == "READY" && client.reconnecting) {
+        /* RESUME LOGIC */
+        client.connection.send(JSON.stringify({
+            op: 6,
+            d: {
+                token: client.token,
+                session_id: client.sessionId,
+                seq: client.seq
+            }
+        }), (err) => {
+            if (err) throw new Error(err);
+
+            client.reconnecting = false;
+        })
+    }
 
     if (data.op == 10) {
         /* GATEWAY HELLO */
@@ -38,6 +55,8 @@ const payload = (incoming, client) => {
     } else {
         console.log(data);
     }
+
+    client.seq = data.s;
 }
 
 const heartbeat = (interval, conn) => {

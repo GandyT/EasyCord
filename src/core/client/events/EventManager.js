@@ -4,7 +4,9 @@ const Fs = require("fs");
 class EventManager {
     constructor(client) {
         this.client = client;
+        this.setupEvents = {};
         this.subscribeEvents = {};
+        this.easyEvents = {};
         this.dataWrappers = {};
 
         /* OFFICIAL EVENTDATA WRAPPERS */
@@ -16,11 +18,49 @@ class EventManager {
 
             this.dataWrappers[EventType.getName(handleData.name)] = handleData.parse;
         });
+
+        var setupFiles = Fs.readdirSync(`${__dirname}/setup`);
+        setupFiles.forEach(file => {
+            if (!file.endsWith(".js")) return;
+
+            var setupData = require(`./setup/${file}`);
+
+            this.setupEvents[EventType.getName(setupData.name)] = setupData.execute;
+        });
+
+        var easyFiles = Fs.readdirSync(`${__dirname}/easycord`);
+        easyFiles.forEach(file => {
+            if (!file.endsWith(".js")) return;
+
+            var easyData = require(`./easycord/${file}`);
+
+            this.easyEvents[EventType.getName(easyData.name)] = easyData.execute;
+        });
+
+
     }
 
     onReceive(eventData) {
         var eventName = EventType.getName(eventData.t);
+
         console.log(eventName);
+
+        if (this.easyEvents[eventName]) this.easyEvents[eventName](eventData, this.client);
+
+        if (!this.client.ready) {
+            if (this.setupEvents[eventName]) this.setupEvents[eventName](eventData, this.client);
+            return;
+        }
+
+        /* DON'T WANT TO CALL THE READY EVENT TWICE FOR THE API */
+        if (this.eventName == "ready") {
+            if (this.client.started) {
+                return;
+            } else {
+                this.client.started = true;
+            }
+        }
+
         if (this.subscribeEvents[eventName]) {
 
             var emitData = eventData.d;
@@ -31,10 +71,17 @@ class EventManager {
 
             this.subscribeEvents[eventName].forEach(callback => {
                 /* ADD UNIQUE COMPONENTS */
-                emitData.getReference = () => { return callback };
-                emitData.getExecuteTime = () => { return new Date().getTime() }
+                var eventData = {};
+                eventData.getHookReference = () => { return callback };
+                eventData.getClient = () => { return this.client }
+                eventData.getExecuteTime = () => { return new Date().getTime() }
 
-                callback(emitData);
+                if (emitData instanceof Array) {
+                    /* LETS DATA WRAPPER PASS MULTIPLE ARGS */
+                    callback(eventData, ...emitData);
+                } else {
+                    callback(eventData, emitData);
+                }
             });
         }
     }
@@ -45,7 +92,7 @@ class EventManager {
         this.subscribeEvents[event].push(hook);
 
         return {
-            getReference: () => { return hook }
+            getHookReference: () => { return hook }
         }
     }
 
