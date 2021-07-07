@@ -1,33 +1,34 @@
 const Guild = require("../../../classes/discord/Guild");
 const Member = require("../../../classes/discord/Member.js");
 const User = require("../../../classes/discord/User");
+const Role = require("../../../classes/discord/Role.js");
 const { default: axios } = require("axios");
 const ApiData = require("../../../../meta/api.json");
 
 module.exports = {
     name: "GUILD_CREATE",
-    execute(eventData, client) {
+    async execute(eventData, client) {
         var guild = new Guild(eventData.d, client);
 
-        eventData.d.channels.forEach(channel => {
-            client.channels.push(channel)
-        });
-        eventData.d.roles.forEach(role => {
-            client.roles.push(role);
+        var roleData = await axios.get(`${ApiData.endpoint}/guilds/${guild.id}/roles`, client.getAuth());
+
+        roleData.data.forEach(role => {
+            role.guild = guild;
+            client.roles.push(new Role(role));
         })
 
         eventData.d.members.forEach(member => {
             member.guild = guild;
             member.user = new User(member.user, client);
 
-            client.members.push(new Member(member));
+            if (!client.users.find(u => u.id == member.user.id)) client.users.push(member.user);
+
+            client.members.push(new Member(member, client));
         });
 
         eventData.d.emojis.forEach(emoji => {
             client.emojis.push(emoji);
         });
-
-        console.log(`${guild.name} has ${eventData.d.members.length} members`)
 
         client.guilds.push(guild);
     }

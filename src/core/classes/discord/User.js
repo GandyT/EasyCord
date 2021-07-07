@@ -13,6 +13,7 @@ class User {
         this.bot = userData.bot;
         this.avatarURL = userData.avatar;
         this.tag = this.username + "#" + this.discriminator;
+        this.dm;
     }
 
     get mention() {
@@ -31,7 +32,14 @@ class User {
         }
 
         return new Promise(async (res, rej) => {
-            var dm = await axios.post(`${ApiData.endpoint}/users/@me/channels`, { 'recipient_id': this.id }, this.client.getAuth());
+            /* CACHING DM CHANNEL */
+            var dm;
+            if (this.dm) {
+                dm = dm;
+            } else {
+                dm = await axios.post(`${ApiData.endpoint}/users/@me/channels`, { 'recipient_id': this.id }, this.client.getAuth());
+                this.dm = dm;
+            }
 
             var body = {
                 content: content,

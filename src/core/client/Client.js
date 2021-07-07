@@ -25,6 +25,7 @@ class Client {
         this.roles = [];
         this.users = [];
         this.emojis = [];
+        this.messages = [];
 
         /* CLIENT-USER-INFO */
         this.LOGGER = new Logger(this);
@@ -33,6 +34,15 @@ class Client {
 
     login() {
         login(this);
+    }
+
+    emit(eventName, ...eventData) {
+        var body = {
+            t: eventName,
+            d: [eventData]
+        }
+
+        this.eventManager.onReceive(body)
     }
 
     givePrivilege() {

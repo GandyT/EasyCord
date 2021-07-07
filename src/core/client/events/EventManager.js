@@ -66,7 +66,7 @@ class EventManager {
             var emitData = eventData.d;
 
             if (this.dataWrappers[eventName]) {
-                emitData = this.dataWrappers[eventName](emitData);
+                emitData = this.dataWrappers[eventName](emitData, this.client);
             }
 
             this.subscribeEvents[eventName].forEach(callback => {
