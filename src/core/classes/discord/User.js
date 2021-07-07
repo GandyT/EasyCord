@@ -4,6 +4,9 @@ const EasyEmbed = require("../easycord/EasyEmbed.js");
 const ApiData = require("../../../meta/api.json");
 const Limits = require("../../../meta/limits.json");
 
+/* HOPEFULLY I DON'T ACCIDENTALLY CREATE A CIRCULAR DEPENDENCY */
+const Message = require("../../classes/discord/Message.js");
+
 class User {
     constructor(userData, client) {
         this.client = client;
@@ -35,7 +38,7 @@ class User {
             /* CACHING DM CHANNEL */
             var dm;
             if (this.dm) {
-                dm = dm;
+                dm = this.dm;
             } else {
                 dm = await axios.post(`${ApiData.endpoint}/users/@me/channels`, { 'recipient_id': this.id }, this.client.getAuth());
                 this.dm = dm;
@@ -44,7 +47,8 @@ class User {
             var body = {
                 content: content,
                 tts: false,
-                embed: {}
+                embed: {},
+                components: [] // new discord feature (ex: buttons)
             }
 
             /* VAR CASES */
@@ -53,7 +57,7 @@ class User {
 
                 if (body.content.length > Limits.maxCharacters) {
                     EasyLogger.warn(`Cannot send a message over ${Limits.maxCharacters} characters long`);
-                    returnl
+                    return;
                 }
             } else {
                 body.content = "";
@@ -80,8 +84,10 @@ class User {
 
                         if (msgData.message) EasyLogger.error(Response.message);
 
-                        /* IMPORTANT: create a message wrapper later */
-                        res(msgData);
+                        /* DONE: ~~IMPORTANT: create a message wrapper later~~ */
+                        var message = new Message(msgData.data, self.client);
+                        self.client.messages.push(message);
+                        res(message);
                     })
             })();
         })

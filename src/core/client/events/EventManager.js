@@ -1,4 +1,5 @@
 const EventType = require("./EventType.js");
+const EasyLock = require("../../classes/easycord/EasyLock.js");
 const Fs = require("fs");
 
 class EventManager {
@@ -36,16 +37,15 @@ class EventManager {
 
             this.easyEvents[EventType.getName(easyData.name)] = easyData.execute;
         });
-
-
     }
 
-    onReceive(eventData) {
+    async onReceive(eventData) {
         var eventName = EventType.getName(eventData.t);
 
         console.log(eventName);
 
-        if (this.easyEvents[eventName]) this.easyEvents[eventName](eventData, this.client);
+        var raceLock = new EasyLock();
+        if (this.easyEvents[eventName]) this.easyEvents[eventName](eventData, this.client, this.client.ready ? raceLock : null);
 
         if (!this.client.ready) {
             if (this.setupEvents[eventName]) this.setupEvents[eventName](eventData, this.client);
@@ -66,7 +66,7 @@ class EventManager {
             var emitData = eventData.d;
 
             if (this.dataWrappers[eventName]) {
-                emitData = this.dataWrappers[eventName](emitData, this.client);
+                emitData = await this.dataWrappers[eventName](emitData, this.client, raceLock);
             }
 
             this.subscribeEvents[eventName].forEach(callback => {

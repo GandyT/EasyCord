@@ -7,7 +7,7 @@ const ApiData = require("../../../../meta/api.json");
 
 module.exports = {
     name: "GUILD_CREATE",
-    async execute(eventData, client) {
+    async execute(eventData, client, lock) {
         var guild = new Guild(eventData.d, client);
 
         var roleData = await axios.get(`${ApiData.endpoint}/guilds/${guild.id}/roles`, client.getAuth());
@@ -31,5 +31,7 @@ module.exports = {
         });
 
         client.guilds.push(guild);
+
+        if (lock) lock.unlock();
     }
 }
