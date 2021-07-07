@@ -8,10 +8,10 @@ module.exports = {
         var guild = new Guild(eventData.d, client);
 
         eventData.d.channels.forEach(channel => {
-
+            client.channels.push(channel)
         });
         eventData.d.roles.forEach(role => {
-
+            client.roles.push(role);
         })
 
         eventData.d.members.forEach(member => {
