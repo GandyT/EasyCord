@@ -1,6 +1,8 @@
 const Guild = require("../../../classes/discord/Guild");
 const Member = require("../../../classes/discord/Member.js");
 const User = require("../../../classes/discord/User");
+const { default: axios } = require("axios");
+const ApiData = require("../../../../meta/api.json");
 
 module.exports = {
     name: "GUILD_CREATE",
@@ -18,14 +20,14 @@ module.exports = {
             member.guild = guild;
             member.user = new User(member.user, client);
 
-            if (!client.users.find(u => u.id == member.user.id)) client.users.push(member.user);
-
             client.members.push(new Member(member));
         });
 
         eventData.d.emojis.forEach(emoji => {
-
+            client.emojis.push(emoji);
         });
+
+        console.log(`${guild.name} has ${eventData.d.members.length} members`)
 
         client.guilds.push(guild);
     }

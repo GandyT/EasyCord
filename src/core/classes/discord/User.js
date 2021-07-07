@@ -52,7 +52,7 @@ class User {
 
                 if (content instanceof EasyEmbed) {
                     // instance of custom embed builder
-                    body.embed = EasyEmbed.getEmbed();
+                    body.embed = content.getEmbed();
                 } else {
                     body.embed = content;
                 }

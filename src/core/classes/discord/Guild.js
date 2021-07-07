@@ -16,19 +16,20 @@ class Guild {
     }
 
     get members() {
+        console.log(this._client.members.length);
         return this._client.members.filter(m => m.guild.id == this.id);
     }
 
     get channels() {
-        return this._client.channels;
+        return this._client.channels.filter(c => c.guild.id == this.id);
     }
 
     get roles() {
-        return this._client.roles;
+        return this._client.roles.filter(r => r.guild.id == this.id);
     }
 
     get emojis() {
-        return this._client.emojis;
+        return this._client.emojis.filter(e => e.guild.id == this.id);
     }
 }
 

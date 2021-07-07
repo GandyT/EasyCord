@@ -24,6 +24,7 @@ class Client {
         this.channels = [];
         this.roles = [];
         this.users = [];
+        this.emojis = [];
 
         /* CLIENT-USER-INFO */
         this.LOGGER = new Logger(this);
@@ -32,6 +33,10 @@ class Client {
 
     login() {
         login(this);
+    }
+
+    givePrivilege() {
+        this.privileged = true;
     }
 
     getAuth() {

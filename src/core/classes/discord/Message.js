@@ -2,20 +2,16 @@ class Message {
     constructor() {
 
     }
-    edit(content)
-    {
+    edit(content) {
 
     }
-    delete(opts = {timeout: 0})
-    {
+    delete(opts = { timeout: 0 }) {
 
     }
-    react()
-    {
+    react() {
 
     }
-    get sentTimeStamp()
-    {
-        
+    get createdAt() {
+
     }
 }

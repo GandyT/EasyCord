@@ -1,56 +1,73 @@
 class EasyEmbed {
-    // am i doing this correctly?
-    constructor(title, desc, fields, img, thumb, footer) {
-        
+    constructor() {
+        this.embed = {}
     }
 
     getEmbed() {
+        return this.embed;
+    }
+
+    setTitle(title) {
+        this.embed.title = String(title);
+
         return this;
     }
 
-    setTitle(string)
-    {
-        if (typeof string != 'string') string = string.toString();
-        this.title = string;
+    setDescription(description) {
+        this.embed.description = String(description);
+
         return this;
     }
-    setDescription(string)
-    {
-        if (typeof string != 'string') string = string.toString();
-        this.description = string;
+
+    setColor(color) {
+        /* TODO: ADD SOME COLOR LOGIC TO ACCEPT MULTIPLE COLOR TYPES */
+
+        this.embed.color = color;
+
         return this;
     }
-    setDesc(string)
-    {
-        if (typeof string != 'string') this.description = string.toString();
-        this.description = string;
+
+    setThumbnail(url) {
+        this.embed.thumbnail = { url: String(url) };
+
         return this;
     }
-    addFields(fieldObjArray, value)
-    {
-        switch(typeof fieldObjArray)
-        {
-            case 'object':
-                let objsToCheck = [];
-                if (fieldObjArray[0]) objsToCheck = fieldObjArray;
-                else objsToCheck = [fieldObjArray];
-                this._validateFields(objsToCheck);
-                objsToCheck.forEach(obj => obj.inline ? obj.inline = obj.inline : obj.inline = false);
-            case 'string':
-                if (!value) return;
-                break;
+
+    setUrl(url) {
+        this.embed.url = String(url);
+
+        return this;
+    }
+
+    addField(name, value) {
+        if (!this.embed.fields) this.embed.fields = [];
+
+        this.embed.fields.push({ name: String(name), value: String(value) });
+
+        return this;
+    }
+
+    setImage(url) {
+        this.embed.image = {
+            url: String(url)
         }
+
         return this;
     }
-    _validateFields(arr)
-    {
-        // ?array => object: must have valid string name and value
-        arr.forEach(obj =>
-        {
-            if (typeof obj != 'object') return;
-            if (!obj.name || !obj.value) return;
-            Object.keys()
-        })
+
+    setTimestamp() {
+        this.embed.timestamp = new Date();
+
+        return this;
+    }
+
+    setFooter(text, iconUrl = "") {
+        this.embed.footer = {
+            text: String(text),
+            icon_url: String(iconUrl)
+        }
+
+        return this;
     }
 }
 
